@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>မဟာဘုတ် နာမည်စစ်</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Padauk','Myanmar Text',sans-serif;
+  background:#0b0a12;
+  color:#eee7e0;
+  padding:8px 5px 20px;
+  min-height:100vh;
+}
+.container { max-width:440px; margin:0 auto; }
+
+.header {
+  text-align:center; padding:12px 8px;
+  background:rgba(30,24,53,0.8);
+  border-radius:16px; border:1px solid rgba(212,175,55,0.2);
+  margin-bottom:10px;
+}
+.header h1 { color:#f5d67c; font-size:16px; }
+.header p { color:#b7a8d9; font-size:9px; margin-top:1px; }
+
+.card {
+  background:rgba(20,16,35,0.7);
+  border:1px solid rgba(212,175,55,0.1);
+  border-radius:12px;
+  padding:8px 10px;
+  margin-bottom:8px;
+}
+.card h2 {
+  color:#f3dba6; font-size:11px;
+  border-bottom:1px solid rgba(212,175,55,0.08);
+  padding-bottom:4px; margin-bottom:6px;
+}
+
+label { display:block; font-size:9px; color:#ccc2e6; margin:5px 0 2px; }
+select, input {
+  width:100%; padding:7px 9px;
+  background:#19152b; border:1px solid #3d3360;
+  border-radius:8px; color:#f0eaff; font-size:12px;
+  font-family:inherit; outline:none;
+}
+select:focus, input:focus { border-color:#d4af37; }
+
+.btn {
+  width:100%; padding:10px; margin-top:8px;
+  background:linear-gradient(135deg,#d4af37,#b3882a);
+  border:none; border-radius:24px;
+  font-weight:700; font-size:13px; color:#120f22;
+  cursor:pointer;
+}
+.btn:active { transform:scale(0.97); }
+
+.hidden { display:none !important; }
+
+.chip-grid { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
+.chip {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(212,175,55,0.12);
+  border-radius:16px; padding:4px 10px; text-align:center;
+}
+.chip .ch { font-size:16px; font-weight:600; color:#fff; }
+.chip .nm { font-size:8px; color:#b7a8d9; }
+.chip .ct { font-size:8px; color:#f5d67c; font-weight:600; }
+
+.summary { font-size:10px; line-height:1.6; color:#dbd1ec; margin:2px 0; }
+.summary b { color:#f5d67c; }
+.subtitle { font-size:9px; color:#b7a8d9; margin:3px 0 2px; }
+.desc-box {
+  margin-top:4px; padding:5px 8px;
+  background:rgba(212,175,55,0.05);
+  border-left:2px solid #d4af37;
+  border-radius:5px; font-size:9px; line-height:1.5;
+  color:#dcd2ef;
+}
+.tag {
+  display:inline-block; padding:0 8px; border-radius:12px;
+  font-size:7px; font-weight:700;
+}
+.itha { background:#1f6b3a; color:#d5ffe0; }
+.anitha { background:#7a1f2b; color:#ffdbdb; }
+.neutral { background:#3f3766; color:#e4dcff; }
+
+.suggest-table { width:100%; font-size:9px; border-collapse:collapse; margin-top:4px; }
+.suggest-table td, .suggest-table th { border:1px solid rgba(212,175,55,0.15); padding:3px 4px; text-align:left; }
+.suggest-table th { background:rgba(212,175,55,0.1); color:#f5d67c; font-weight:600; }
+.suggest-table td { color:#cfc4e8; }
+
+.footer { text-align:center; font-size:7px; color:#6e6099; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>✦ မဟာဘုတ် နာမည်စစ် ✦</h1>
+    <p>သင့်အတွက် အမည်ပေး အကြံဉာဏ် စနစ် — မွေးနေ့ + ကြွင်းအလိုက် အသေးစိတ် ဆန်းစစ်ခြင်း</p>
+  </div>
+
+  <div class="card">
+    <h2>၁။ မွေးဖွားချက်</h2>
+    <label>မဟာဘုတ် ကြွင်း</label>
+    <select id="remainder">
+      <option value="1">၁ ကြွင်း</option><option value="2">၂ ကြွင်း</option>
+      <option value="3" selected>၃ ကြွင်း</option><option value="4">၄ ကြွင်း</option>
+      <option value="5">၅ ကြွင်း</option><option value="6">၆ ကြွင်း</option>
+      <option value="0">၀ ကြွင်း</option>
+    </select>
+    <label>နေ့သားသမီး (မွေးနေ့)</label>
+    <select id="birthday">
+      <option value="1" selected>တနင်္ဂနွေ</option><option value="2">တနင်္လာ</option>
+      <option value="3">အင်္ဂါ</option><option value="4">ဗုဒ္ဓဟူး</option>
+      <option value="5">ကြာသပတေး</option><option value="6">သောကြာ</option>
+      <option value="0">စနေ</option>
+    </select>
+    <label>စစ်ဆေးလိုသည့် နာမည်</label>
+    <input type="text" id="nameInput" placeholder="ဥပမာ − အေးမင်းထွန်း" value="ကြယ်တံခွန်">
+    <button class="btn" onclick="calculate()">✦ တွက်မည် ✦</button>
+  </div>
+
+  <div id="result" class="hidden"></div>
+  <div class="footer">မဟာဘုတ်ကျမ်းအရ စနစ်တကျ တွက်ချက်ထားသည်။</div>
+</div>
+
+<script>
+const DAY = {
+  1:{name:'တနင်္ဂနွေ', color:'အနီ/ရွှေ', nat:'မီးနတ်', dhat:'တေဇော(မီးခဲ)', dhatType:'ဖို'},
+  2:{name:'တနင်္လာ', color:'အဖြူ', nat:'ရေနတ်', dhat:'ပထဝီ(ကျောက်)', dhatType:'ဖို'},
+  3:{name:'အင်္ဂါ', color:'နီဖြူ', nat:'ကတ္ထိကေယျ', dhat:'ဝါယော(လေပြေ)', dhatType:'ဖို'},
+  4:{name:'ဗုဒ္ဓဟူး', color:'အစိမ်း', nat:'ဗိဿနိုး', dhat:'အာပေါ(ရေချို)', dhatType:'ဖို'},
+  5:{name:'ကြာသပတေး', color:'အဝါ', nat:'သိကြား', dhat:'ပထဝီ(မြေသား)', dhatType:'မ'},
+  6:{name:'သောကြာ', color:'အပြောက်အကျား', nat:'သူဇာ', dhat:'အာပေါ(ရေငန်)', dhatType:'မ'},
+  0:{name:'စနေ', color:'အနက်', nat:'ဗြဟ္မာ', dhat:'တေဇော(မီးလျှံ)', dhatType:'မ'},
+  8:{name:'ရာဟု', color:'အညို', nat:'အသူရာ', dhat:'ဝါယော(လေမုန်တိုင်း)', dhatType:'မ'}
+};
+
+const CONSONANT_MAP = {
+  'အ':1,'ဥ':1,
+  'က':2,'ခ':2,'ဂ':2,'ဃ':2,'င':2,
+  'စ':3,'ဆ':3,'ဇ':3,'ဈ':3,'ည':3,
+  'ယ':4,'လ':4,'ဝ':4,
+  'ပ':5,'ဖ':5,'ဘ':5,'ဗ':5,'မ':5,
+  'သ':6,'ဟ':6,
+  'ဋ':0,'ဌ':0,'ဍ':0,'ဎ':0,'ဏ':0,'န':0,'တ':0,'ထ':0,'ဒ':0,'ဓ':0,
+  'ရ':8,'ဠ':8
+};
+
+const CAT_GROUPS = {
+  'ဒွေးဒဟ': ['င','ည','ဏ','န','မ','လ','သ'],
+  'မ(ကြီး)': ['ဃ','ဈ','ဎ','ဓ','ဘ','ခ','ဆ','ဌ','ထ','ဖ'],
+  'ဖို(သေး)': ['က','စ','ဋ','တ','ပ','ဂ','ဇ','ဍ','ဒ','ဗ'],
+  'သံယုဂ်': ['ယ','ရ','ဝ','ဟ'],
+  'မုဒ္ဒကာရက': ['ဠ','အ']
+};
+
+const YAWZANA = {
+  'ဥပရဖြူ': ['က','စ','ဋ','တ','ပ','ယ'],
+  'ဥပရဝါ': ['ခ','ဆ','ဌ','ထ','ဖ','ရ','သ','ဝ'],
+  'မေဇ္ဈလတ်': ['ဂ','ဇ','ဍ','ဒ','ဗ','ဠ','ဟ'],
+  'ဟေဌညို': ['ဃ','ဈ','ဎ','ဓ','ဘ','လ','အ'],
+  'ဟေဌမဲ': ['င','ည','ဏ','န','မ','ဝ']
+};
+
+const DIACRITIC = {
+  'ာ':'တချောင်းငင်','ါ':'တချောင်းငင်','ေ':'သဝေထိုး','ဲ':'နှစ်ချောင်းငင်',
+  'ိ':'လုံးကြီးတင်','ီ':'လုံးကြီးတင်သတ်','ု':'လုံးကြွတ်','ူ':'လုံးကြွတ်သတ်',
+  'ံ':'သင်ပေါင်းငယ်','်':'အသတ်(တံခွန်)','့':'အောက်မြစ်','း':'ဝိသျ်',
+  'ျ':'ယပက်လက်','ြ':'ရရစ်','ွ':'ဝဆွဲ','ှ':'ဟထိုး'
+};
+
+const DIACRITIC_MEANING = {
+  'ာ':'အဆင်းလှခြင်း၊ ချမ်းသာခြင်း',
+  'ါ':'အဆင်းလှခြင်း၊ ချမ်းသာခြင်း',
+  'ေ':'ထင်ရှားကျော်စောခြင်း',
+  'ဲ':'အလိုဆန္ဒပြည့်ခြင်း',
+  'ိ':'ဉာဏ်ပညာထက်မြက်ခြင်း',
+  'ီ':'ဉာဏ်ပညာကြီးမားခြင်း',
+  'ု':'စည်းစိမ်ဥစ္စာပေါများခြင်း',
+  'ူ':'ကြီးပွားတိုးတက်ခြင်း',
+  'ံ':'သတ္တိရှိခြင်း၊ စွမ်းအားကြီးခြင်း',
+  '်':'တည်ငြိမ်အေးဆေးခြင်း',
+  '့':'နူးညံ့သိမ်မွေ့ခြင်း',
+  'း':'ကြီးကျယ်ခမ်းနားခြင်း',
+  'ျ':'ပေါင်းသင်းဆက်ဆံရေးကောင်းခြင်း',
+  'ြ':'လိမ္မာပါးနပ်ခြင်း',
+  'ွ':'ဩဇာရှိခြင်း',
+  'ှ':'သိမ်မွေ့နူးညံ့ခြင်း'
+};
+
+const BHAVA = {
+  'ပုတိ':{itha:false, mat:2, pakkha:'အထွန်း'},
+  'ဘင်္ဂ':{itha:false, mat:3, pakkha:'ဘင်္ဂ'},
+  'မရဏ':{itha:false, mat:4, pakkha:'အဓိပတိ'},
+  'အထွန်း':{itha:true, mat:4, pakkha:'ပုတိ'},
+  'သိုက်':{itha:true, mat:3, pakkha:'ရာဇ'},
+  'ရာဇ':{itha:true, mat:2, pakkha:'သိုက်'},
+  'အဓိပတိ':{itha:true, mat:1, pakkha:'မရဏ'}
+};
+
+const BHAVA_ORDER = ['ဘင်္ဂ','ပုတိ','သိုက်','မရဏ','အဓိပတိ','ရာဇ','အထွန်း'];
+const DHAT_FRIEND = [[1,0],[2,5],[3,8],[4,6]];
+const DHAT_ENEMY = [[1,4],[3,2],[8,5],[0,6]];
+const INNER_FRIEND = [[1,6],[3,5],[0,4],[2,8]];
+const INNER_ENEMY = [[0,0],[6,2],[1,4],[8,3]];
+const PAPA_DAYS = [1,3,0,8];
+
+function isDayPair(pairs, a, b) { return pairs.some(p => (p[0]===a && p[1]===b) || (p[0]===b && p[1]===a)); }
+function papaSoma(d) { return PAPA_DAYS.includes(d) ? 'ပါပ(အပူ)' : 'သောမ(အအေး)'; }
+
+function getPakkhaDay(r, bhava) {
+  const rr = r === 0 ? 7 : r;
+  const pakkhaBhava = BHAVA[bhava].pakkha;
+  const idx = BHAVA_ORDER.indexOf(pakkhaBhava);
+  const dayNum = (idx + rr) % 7;
+  return { bhava: pakkhaBhava, dayNum, dayName: DAY[dayNum].name };
+}
+
+function letterNarrative(ch) {
+  const d = CONSONANT_MAP[ch];
+  const day = DAY[d];
+  const cat = getGroup(CAT_GROUPS, ch);
+  const yaw = getGroup(YAWZANA, ch);
+  return {
+    ch, day: d, dayName: day ? day.name : '—',
+    cat, yaw,
+    papaSoma: day ? papaSoma(d) : '—',
+    nat: day ? day.nat : '—',
+    color: day ? day.color : '—',
+    dhatType: day ? day.dhatType : '—',
+    dhat: day ? day.dhat : '—',
+    text: day
+      ? `<b>${ch}</b> အက္ခရာသည် <b>${cat}</b> အုပ်စု ဖြစ်၍ ယောဇနာသုံးပါး အရ <b>${yaw}</b> ဖြစ်ပါသည်။ <b>${day.name}</b> နေ့နံ ဖြစ်သဖြင့် <b>${papaSoma(d)}</b> ဂြိုဟ်၊ <b>${day.nat}</b> က အစိုးရပြီး <b>${day.color}</b> ရောင်စိုးမိုး၍ <b>${day.dhatType}</b> ဓာတ် (${day.dhat}) ဖြစ်ပါသည်။`
+      : `<b>${ch}</b> အက္ခရာအတွက် နေ့နံ အချက်အလက် မတွေ့ပါ။`
+  };
+}
+
+const DHAT_FRIEND_NAMED = [
+  {pair:[1,0], name:'အန္တော'},
+  {pair:[2,5], name:'ဂဗ္ဘေ'},
+  {pair:[3,8], name:'စရေ'},
+  {pair:[4,6], name:'ဝံသေ'}
+];
+function getDhatFriendName(a, b) {
+  const f = DHAT_FRIEND_NAMED.find(p => (p.pair[0]===a && p.pair[1]===b) || (p.pair[0]===b && p.pair[1]===a));
+  return f ? f.name : null;
+}
+
+function papaIthaInfo(d) {
+  const isPapa = PAPA_DAYS.includes(d);
+  return { label: isPapa ? 'ပါပ' : 'သောမ', itha: !isPapa };
+}
+
+const COMBO = {
+  'ii':'အစကောင်း၍ အဆုံးကောင်းသော နာမည်ဖြစ်၏။ ဘဝကို တည်တည်ငြိမ်ငြိမ် အေးအေးဆေးဆေး ဖြတ်သန်းရမည်။ အထင်အမြင်လွဲမှားခံရခြင်း ကင်းရှင်းမည်။ မကောင်းသော ဒုစရိုက်အလုပ်များ ရှောင်ကြဉ်ပြီး ဣဋ္ဌအလုပ်များကိုသာ ရွေးချယ်လုပ်ကိုင်ပါက ဘဝတစ်လျှောက် အောင်မြင်တိုးတက်မည်။',
+  'ia':'ရင်းလုံးက ကောင်းပြီး အဆုံးလုံးက မကောင်းသောကြောင့် အစကောင်း-အနှောင်းမသေချာသည်။ ဘဝအစပိုင်း အေးဆေးသော်လည်း အသက်ကြီးလာသည်နှင့်အမျှ တဖြည်းဖြည်းအဖျားရှူးလာနိုင်သည်။',
+  'ai':'ရင်းလုံးက မကောင်းပြီး အဆုံးလုံးက ကောင်းသောကြောင့် အစခက်ခဲ-အဆုံးကောင်းသည်။ ဘဝအစပိုင်း အခက်အခဲရှိသော်လည်း အချိန်ကြာလာသည်နှင့်အမျှ တဖြည်းဖြည်း အဆင်ပြေလာနိုင်သည်။',
+  'aa':'နှစ်ခုစလုံး အနိဋ္ဌဖြစ်နေသောကြောင့် ဂရုစိုက်ရန်လိုသည်။ ဘဝတစ်လျှောက် ပင်ပန်းဆင်းရဲစွာ ဖြတ်သန်းရတတ်ပြီး အတိုက်အခိုက်များနှင့် ကြုံနိုင်သည်။'
+};
+
+function getBhava(r, d) {
+  const ORDER = ['ဘင်္ဂ','ပုတိ','သိုက်','မရဏ','အဓိပတိ','ရာဇ','အထွန်း'];
+  let rr = r === 0 ? 7 : r;
+  let idx = ((d - rr) % 7 + 7) % 7;
+  return ORDER[idx];
+}
+
+function getGroup(map, ch) { for (let k in map) if (map[k].includes(ch)) return k; return '—'; }
+
+function isPair(pairs, a, b) { return pairs.some(p => (p[0]===a && p[1]===b) || (p[0]===b && p[1]===a)); }
+
+function getRelation(a, b) {
+  const FRIEND = [[1,5],[2,4],[3,6],[0,8]];
+  const ENEMY = [[1,3],[2,5],[6,0],[4,8]];
+  if (isPair(FRIEND, a, b)) return {label:'အပြင်မိတ်ဖက်', cls:'itha'};
+  if (isPair(ENEMY, a, b)) return {label:'ရန်ဘက်', cls:'anitha'};
+  return {label:'ဥဒါသိန်', cls:'neutral'};
+}
+
+function tag(text, cls) { return `<span class="tag ${cls}">${text}</span>`; }
+
+const consonants = new Set([
+  0x1000,0x1001,0x1002,0x1003,0x1004,0x1005,0x1006,0x1007,0x1008,0x1009,0x100A,
+  0x100B,0x100C,0x100D,0x100E,0x100F,0x1010,0x1011,0x1012,0x1013,0x1014,
+  0x1015,0x1016,0x1017,0x1018,0x1019,0x101A,0x101B,0x101C,0x101D,0x101E,
+  0x101F,0x1020,0x1021,
+  0x1023,0x1024,0x1025,0x1026,0x1027,0x1029,0x102A
+]);
+
+const anusvara = 0x1036;
+const visarga = 0x1038;
+const asat = 0x103A;
+const virama = 0x1039;
+const medialHa = 0x103E; // ဟထိုး
+
+// ★★★ နှာသံဗျည်းများ ★★★
+const NASAL_CODA = new Set(['င','ည','ဏ','န','မ']);
+
+// ★★★ မွမ်းမံထားသော function — သတ်ဗျည်းကို "်" ရဲ့ ဘယ်ဘက်မှာ တိုက်ရိုက်ရှိမှ ဖျက် ★★★
+function getConsonantsOnly(chars) {
+  const len = chars.length;
+  const killedIndices = new Set();
+  
+  // ★ ဟထိုး (ှ) ရဲ့ ညာဘက်က ဗျည်းကို ဖျက်ပါ ★
+  for (let i = 0; i < len; i++) {
+    const code = chars[i].codePointAt(0);
+    if (code === medialHa) {
+      for (let j = i + 1; j < len; j++) {
+        const nextCode = chars[j].codePointAt(0);
+        if (consonants.has(nextCode)) {
+          killedIndices.add(j);
+          break;
+        }
+        if (nextCode >= 0x102B && nextCode <= 0x103E) continue;
+        break;
+      }
+    }
+  }
+  
+  // ★ ပါဠိဆင့် (virama) ရဲ့ ဘယ်ဘက်က ဗျည်းကို ဖျက်ပါ ★
+  for (let i = 0; i < len; i++) {
+    const code = chars[i].codePointAt(0);
+    if (code === virama) {
+      for (let j = i - 1; j >= 0; j--) {
+        const prevCode = chars[j].codePointAt(0);
+        if (consonants.has(prevCode)) {
+          killedIndices.add(j);
+          break;
+        }
+      }
+    }
+  }
+  
+  // ★ သတ်ဗျည်း (asat) — "်" ရဲ့ ဘယ်ဘက်မှာ တိုက်ရိုက် ဗျည်း ရှိရင် ဖျက်ပါ ★
+  for (let i = 0; i < len; i++) {
+    const code = chars[i].codePointAt(0);
+    if (code === asat) {
+      if (i > 0) {
+        const prevCode = chars[i-1].codePointAt(0);
+        if (consonants.has(prevCode)) {
+          killedIndices.add(i-1);
+        }
+      }
+    }
+  }
+  
+  const result = [];
+  for (let i = 0; i < len; i++) {
+    const code = chars[i].codePointAt(0);
+    if (consonants.has(code) && !killedIndices.has(i)) {
+      result.push(chars[i]);
+    }
+  }
+  return result;
+}
+
+function getCodaConsonants(chars) {
+  const len = chars.length;
+  const result = [];
+  for (let i = 0; i < len; i++) {
+    const code = chars[i].codePointAt(0);
+    if (code === asat) {
+      if (i > 0) {
+        const prevCode = chars[i-1].codePointAt(0);
+        if (consonants.has(prevCode)) {
+          result.push(chars[i-1]);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+function getDiacriticDetails(chars) {
+  const len = chars.length;
+  const vowelCounts = {};
+  const medialCounts = {};
+  let anusvaraCount = 0;
+  let visargaCount = 0;
+  const asatComboCounts = {};
+  
+  for (let i = 0; i < len; i++) {
+    const code = chars[i].codePointAt(0);
+    
+    if (code >= 0x103B && code <= 0x103E) {
+      const ch = chars[i];
+      medialCounts[ch] = (medialCounts[ch] || 0) + 1;
+    }
+    else if (code === anusvara) {
+      anusvaraCount++;
+    }
+    else if (code === visarga) {
+      visargaCount++;
+    }
+    else if (code === asat) {
+      for (let j = i - 1; j >= 0; j--) {
+        const prevCode = chars[j].codePointAt(0);
+        if (consonants.has(prevCode)) {
+          const combo = chars[j] + 'သတ်';
+          asatComboCounts[combo] = (asatComboCounts[combo] || 0) + 1;
+          break;
+        }
+      }
+    }
+    else if ((code >= 0x102B && code <= 0x1032) || code === 0x1036) {
+      if (code !== anusvara) {
+        const ch = chars[i];
+        vowelCounts[ch] = (vowelCounts[ch] || 0) + 1;
+      }
+    }
+  }
+  
+  const allSymbols = {};
+  const order = [];
+  
+  for (const [ch, count] of Object.entries(vowelCounts)) {
+    allSymbols[ch] = count;
+    if (!order.includes(ch)) order.push(ch);
+  }
+  
+  for (const [ch, count] of Object.entries(medialCounts)) {
+    allSymbols[ch] = count;
+    if (!order.includes(ch)) order.push(ch);
+  }
+  
+  if (anusvaraCount > 0) {
+    allSymbols['ံ'] = anusvaraCount;
+    if (!order.includes('ံ')) order.push('ံ');
+  }
+  
+  if (visargaCount > 0) {
+    allSymbols['း'] = visargaCount;
+    if (!order.includes('း')) order.push('း');
+  }
+  
+  for (const [combo, count] of Object.entries(asatComboCounts)) {
+    allSymbols[combo] = count;
+    if (!order.includes(combo)) order.push(combo);
+  }
+  
+  return { allSymbols, order };
+}
+
+function getSuggestedPairs(r, d) {
+  const map = {
+    '0,1': ['၁၅','၁၁၅','၁၅၅','၁၂၅'],
+    '0,2': ['၂၂','၂၄','၂၆','၂၄၆','၂၆၄','၂၂၄','၂၄၄','၂၂၆','၂၆၆'],
+    '0,3': ['၀၂','၀၄','၀၂၄','၀၄၂','၁၄','၁၅','၁၂','၁၂၅','၁၂၄','၁၄၅','၁၅၄'],
+    '0,4': ['၄၄','၄၅','၄၆','၄၅၆','၄၆၅','၄၄၅','၄၅၅','၄၆၆','၄၄၄'],
+    '0,5': ['၅၅','၅၆','၅၅၆','၅၆၆','၅၂၆','၅၄၆'],
+    '0,6': ['၆၆','၆၄၆','၆၅၆','၆၆၆'],
+    '0,0': ['၀၄','၀၄၄','၀၆၄','၀၅၄','၀၆၄','၀၄၆','၀၅၆','၀၂၄','၀၂၅','၀၂၆'],
+    '1,1': ['၁၅','၁၆','၁၀','၁၅၅','၁၆၆','၁၀၀','၁၅၆','၁၆၅','၁၅၀','၁၀၅','၁၆၀','၁၀၆'],
+    '1,2': ['၂၆','၂၅','၂၀၆','၂၀၅','၂၅၆','၂၆၅'],
+    '1,3': ['၃၅','၃၀','၃၅၅','၃၀၀','၃၅၆','၃၆၅','၃၅၀','၃၀၅','၃၆၀','၃၀၆'],
+    '1,4': ['၁၀','၁၅','၁၆','၁၃','၂၅','၂၆','၂၃','၁၀၀','၁၅၅','၁၆၆','၁၃၃','၂၅၅','၂၆၆','၂၃၃','၁၅၀','၁၀၅','၁၀၆','၁၆၀','၁၅၆','၁၆၅','၁၀၃','၁၃၀','၁၅၃','၁၃၅','၁၃၆','၁၆၃','၂၀၅','၂၀၆','၂၀၃','၂၅၆','၂၆၅','၂၃၆','၂၆၃'],
+    '1,5': ['၅၅','၅၃','၅၆','၅၀','၅၅၅','၅၅၃','၅၅၆','၅၅၀','၅၃၅','၅၆၅','၅၀၅','၅၃၆','၅၆၃','၅၃၀','၅၀၃','၅၆၀','၅၀၆'],
+    '1,6': ['၆၆','၆၀','၆၆၆','၆၆၀','၆၀၆','၆၅၀','၆၄၀','၆၅၆','၆၄၆'],
+    '1,0': ['၀၀','၀၀၀','၀၅၀','၀၆၀','၀၃၀'],
+    '2,1': ['၁၁','၁၆၁','၁၅၁','၁၄၁','၁၁၁'],
+    '2,2': ['၂၁','၂၀','၂၆','၂၄','၂၁၁','၂၀၀','၂၆၆','၂၄၄','၂၄၁','၂၁၄','၂၆၁','၂၁၆','၂၀၁','၂၁၀','၂၄၆','၂၆၄','၂၄၀','၂၀၄','၂၆၀','၂၀၆'],
+    '2,3': ['၃၄','၃၆','၃၀','၃၄၄','၃၆၆','၃၀၀','၃၄၆','၃၆၄','၃၄၀','၃၀၄','၃၄၆','၃၆၄','၃၄၀','၃၀၅'],
+    '2,4': ['၄၆','၄၁','၄၄','၄၆၁','၄၁၆','၄၆၄','၄၆၆','၄၄၄','၄၄၆'],
+    '2,5': ['၂၄','၂၆','၂၁','၂၄၄','၂၆၆','၂၁၁','၂၄၆','၂၆၄','၂၄၁','၂၁၄','၂၆၁','၂၁၆','၃၆','၃၁','၃၄','၃၀','၃၃၆','၃၃၁','၃၆၁','၃၁၆','၃၆၄','၃၄၆','၃၃၄','၃၄၀','၃၆၀','၃၀၆','၃၁၄','၃၄၁','၃၁၀','၃၀၁','၃၄၀','၃၀၄'],
+    '2,6': ['၆၆','၆၁','၆၆၁','၆၁၁','၆၄၆','၆၀၆','၆၁၆','၆၄၁','၆၀၁'],
+    '2,0': ['၀၀','၀၁','၀၀၀','၀၀၁','၀၁၀','၀၆၁','၀၄၀','၀၆၀','၀၄၁','၀၆၁'],
+    '3,1': ['၁၁','၁၂','၁၀၁','၁၂၁','၁၅၁','၁၁၂','၁၂၂','၁၀၂','၁၅၂'],
+    '3,2': ['၂၂','၂၀','၂၁','၂၂၂','၂၀၂','၂၁၂','၂၂၀','၂၂၁','၂၀၀','၂၀၁','၂၁၀'],
+    '3,3': ['၃၅','၃၀','၃၁','၃၂','၃၅၅','၃၅၀','၃၀၅','၃၀၂','၃၂၀','၃၅၁','၃၁၅','၃၀၁','၃၁၀','၃၅၂','၃၂၅','၃၁၂','၃၂၁'],
+    '3,4': ['၄၁','၄၅','၄၀','၄၁၁','၄၅၅','၄၀၀','၄၅၁','၄၁၅','၄၅၀','၄၀၅','၄၁၀','၄၀၁'],
+    '3,5': ['၅၅','၅၀','၅၂','၅၅၅','၅၅၀','၅၀၅','၅၅၂','၅၂၅','၅၀၂','၅၂၀','၅၀၀'],
+    '3,6': ['၃၅','၃၀','၃၁','၃၂','၄၅','၄၀','၄၁','၄၂','၃၅၅','၃၅၀','၃၀၅','၃၅၁','၃၁၅','၃၅၂','၃၂၅','၃၀၁','၃၁၀','၃၀၂','၃၂၀','၃၂၁','၃၁၂','၄၅၅','၄၅၀','၄၀၅','၄၅၁','၄၁၅','၄၅၂','၄၂၅','၄၀၁','၄၁၀','၄၀၂','၄၂၀','၄၂၁','၄၁၂'],
+    '3,0': ['၀၀','၀၁','၀၂','၀၀၀','၀၀၁','၀၀၂','၀၁၂','၀၂၁','၀၅၀','၀၁၀','၀၂၀','၀၅၁','၀၅၂','၀၂၂','၀၁၁'],
+    '4,1': ['၁၁','၁၂','၁၃','၁၁၂','၁၁၁','၁၁၃','၁၂၂','၁၃၃','၁၂၃','၁၃၂','၁၃၁','၁၂၁'],
+    '4,2': ['၂၂','၂၃','၂၁၂','၂၁၃','၂၆၂','၂၆၃','၂၂၂','၂၂၃'],
+    '4,3': ['၃၃','၃၁၃','၃၂၃','၃၆၃','၃၃၃'],
+    '4,4': ['၄၆','၄၁','၄၂','၄၃','၄၄၆','၄၆၆','၄၄၁','၄၁၁','၄၄၂','၄၂၂','၄၄၃','၄၆၃','၄၃၆','၄၁၂','၄၂၁','၄၁၃','၄၃၁','၄၃၃','၄၂၃','၄၃၂'],
+    '4,5': ['၅၁','၅၂','၅၆','၅၅၁','၅၅၂','၅၅၆','၅၁၂','၅၂၁','၅၁၆','၅၆၁','၅၂၆','၅၆၂','၅၁၁','၅၂၂','၅၆၆'],
+    '4,6': ['၆၆','၆၁','၆၃','၆၆၆','၆၆၁','၆၆၃','၆၁၆','၆၃၆','၆၁၃','၆၃၁','၆၂၃','၆၃၂','၆၁၁','၆၃၃'],
+    '4,0': ['၄၆','၄၁','၄၂','၄၃','၅၆','၅၁','၅၂','၄၆၆','၄၁၁','၄၂၂','၄၃၃','၄၆၁','၄၁၆','၄၆၂','၄၂၆','၄၆၃','၄၃၆','၄၁၂','၄၂၁','၄၁၃','၄၃၁','၄၂၃','၄၃၂','၅၆၆','၅၁၁','၅၂၂','၅၆၁','၅၁၆','၅၆၂','၅၂၆','၅၁၂','၅၂၁'],
+    '5,1': ['၅၂','၅၀','၅၃','၅၄','၆၀','၆၂','၆၃','၅၂၂','၅၀၀','၅၃၃','၅၄၄','၅၂၀','၅၀၂','၅၂၃','၅၃၂','၅၂၄','၅၄၂','၅၀၃','၅၃၀','၅၀၄','၅၄၀','၅၃၄','၅၄၃','၆၀၀','၆၂၂','၆၃၃','၆၀၂','၆၂၀','၆၀၃','၆၃၀','၆၂၃','၆၃၂'],
+    '5,2': ['၂၂','၂၃','၂၄','၂၂၂','၂၂၃','၂၃၂','၂၂၄','၂၄၂','၂၀၂','၂၀၃','၂၀၄'],
+    '5,3': ['၃၃','၃၄၄','၃၃၄','၃၄၃','၃၀၃','၃၂၃','၃၄၄'],
+    '5,4': ['၄၄','၄၄၄','၄၃၄','၄၀၄','၄၂၄'],
+    '5,5': ['၅၀','၅၂','၅၃','၅၄','၅၀၂','၅၂၀','၅၃၀','၅၀၃','၅၀၄','၅၄၀','၅၂၃','၅၃၂','၅၂၄','၅၄၂','၅၄၃','၅၃၄'],
+    '5,6': ['၆၂','၆၃','၆၂၃','၆၃၂','၆၂၂','၆၃၃'],
+    '5,0': ['၀၀','၀၂','၀၀၀','၀၄','၀၂၀','၀၀၂','၀၂၂','၀၄၄','၀၂၄','၀၄၂'],
+    '6,1': ['၁၁','၁၃','၁၅','၁၁၁','၁၁၃','၁၁၅','၁၃၃','၁၅၅','၁၃၅','၁၅၃'],
+    '6,2': ['၆၁','၆၃','၆၄','၆၅','၆၁၁','၆၃၃','၆၄၄','၆၅၅','၆၁၃','၆၃၁','၆၁၄','၆၄၁','၆၁၅','၆၅၁','၆၃၄','၆၄၃','၆၃၅','၆၅၃','၆၄၅','၆၅၄','၀၁','၀၃','၀၄','၀၁၁','၀၃၃','၀၄၄','၀၁၃','၀၃၁','၀၁၄','၀၄၁','၀၄၃','၀၃၄'],
+    '6,3': ['၅၅','၅၅၅','၅၁၅','၅၃၅','၅၄၅'],
+    '6,4': ['၄၄','၄၅','၄၄၄','၄၅၅','၄၅၄','၄၁၄','၄၃၄','၄၁၅','၄၃၅'],
+    '6,5': ['၅၅','၅၅၅','၅၁၅','၅၃၅','၅၄၅'],
+    '6,6': ['၆၁','၆၄','၆၃','၆၁၁','၆၄၄','၆၃၃','၆၁၄','၆၄၁','၆၁၃','၆၃၁','၆၄၃','၆၃၄'],
+    '6,0': ['၀၁','၀၃','၀၄','၀၃၃','၀၁၁','၀၄၄','၀၃၁','၀၁၃','၀၁၄','၀၄၁','၀၄၃','၀၃၄']
+  };
+  let key = r + ',' + d;
+  return map[key] || ['နံသင့်အတွဲများ ရှာမတွေ့ပါ'];
+}
+
+function calculate() {
+  const r = parseInt(document.getElementById('remainder').value);
+  const d = parseInt(document.getElementById('birthday').value);
+  const name = document.getElementById('nameInput').value.trim();
+  const res = document.getElementById('result');
+  if (!name) { alert('နာမည်ထည့်ပါ'); return; }
+
+  const chars = Array.from(name);
+
+  const consOnly = getConsonantsOnly(chars);
+  const codaCons = getCodaConsonants(chars);
+
+  const cf = {}, co = [];
+  consOnly.forEach(ch => {
+    if (!cf[ch]) { cf[ch]=0; co.push(ch); }
+    cf[ch]++;
+  });
+
+  const codaf = {}, codaOrder = [];
+  codaCons.forEach(ch => {
+    if (!codaf[ch]) { codaf[ch]=0; codaOrder.push(ch); }
+    codaf[ch]++;
+  });
+
+  const { allSymbols, order: diaOrder } = getDiacriticDetails(chars);
+
+  const bhava = getBhava(r, d);
+  const info = BHAVA[bhava];
+
+  const firstCh = consOnly.length > 0 ? consOnly[0] : '—';
+  const lastCh = consOnly.length > 0 ? consOnly[consOnly.length-1] : '—';
+  const firstDay = CONSONANT_MAP[firstCh] || 0;
+  const lastDay = CONSONANT_MAP[lastCh] || 0;
+  
+  const firstBhava = getBhava(r, firstDay);
+  const lastBhava = getBhava(r, lastDay);
+  const firstItha = BHAVA[firstBhava].itha;
+  const lastItha = BHAVA[lastBhava].itha;
+  const firstGroup = getGroup(CAT_GROUPS, firstCh);
+  const lastGroup = getGroup(CAT_GROUPS, lastCh);
+  const firstYaw = getGroup(YAWZANA, firstCh);
+  const lastYaw = getGroup(YAWZANA, lastCh);
+  const comboKey = (firstItha?'i':'a') + (lastItha?'i':'a');
+  const comboLabel = { ii:'ဣဋ္ဌ+ဣဋ္ဌ', ia:'ဣဋ္ဌ+အနိဋ္ဌ', ai:'အနိဋ္ဌ+ဣဋ္ဌ', aa:'အနိဋ္ဌ+အနိဋ္ဌ' };
+  const rel = getRelation(firstDay, lastDay);
+
+  const pakkha = info.pakkha;
+  const pakkhaDay = getPakkhaDay(r, bhava);
+
+  const dhatFriendName = getDhatFriendName(firstDay, lastDay);
+  const dhatIsEnemy = !dhatFriendName && isDayPair(DHAT_ENEMY, firstDay, lastDay);
+  const dhatRelLabel = dhatFriendName ? (dhatFriendName + ' ဓာတ်မိတ်') : (dhatIsEnemy ? 'ဓာတ်ရန်' : 'အန္တော ဓာတ်မိတ်');
+
+  const firstPapaInfo = papaIthaInfo(firstDay);
+  const lastPapaInfo = papaIthaInfo(lastDay);
+
+  const letterFortunes = co.map(ch => letterNarrative(ch));
+
+  const suggested = getSuggestedPairs(r, d);
+  let suggestRows = '';
+  for (let i=0; i<suggested.length; i+=3) {
+    suggestRows += '<tr>';
+    for (let j=0; j<3; j++) {
+      let idx = i+j;
+      suggestRows += `<td>${idx < suggested.length ? suggested[idx] : ''}</td>`;
+    }
+    suggestRows += '</tr>';
+  }
+
+  let initChips = consOnly.map(ch => {
+    let day = CONSONANT_MAP[ch];
+    return `<div class="chip"><div class="ch">${ch}</div><div class="nm">${DAY[day]?.name || '—'}</div></div>`;
+  }).join('');
+
+  let consDetail = co.map(ch => `${ch} = ${cf[ch]} ကြိမ်`).join(' • ');
+
+  let codaChips = codaOrder.length
+    ? codaOrder.map(ch => `<div class="chip"><div class="ch">${ch}</div><div class="nm">သတ်</div><div class="ct">${codaf[ch]} ကြိမ်</div></div>`).join('')
+    : `<div class="chip"><div class="nm">သတ်ပြီးအက္ခရာ မရှိ</div></div>`;
+
+  let codaDetail = codaOrder.length
+    ? codaOrder.map(ch => `${ch} သတ် = ${codaf[ch]} ကြိမ်`).join(' • ')
+    : 'သတ်ပြီးအက္ခရာ မရှိ';
+
+  let diaChips = diaOrder.length
+    ? diaOrder.map(ch => {
+        let displayName = DIACRITIC[ch] || ch;
+        if (ch.includes('သတ်')) displayName = ch;
+        return `<div class="chip"><div class="ch">${ch}</div><div class="nm">${displayName}</div><div class="ct">${allSymbols[ch]} ကြိမ်</div></div>`;
+      }).join('')
+    : `<div class="chip"><div class="nm">သင်္ကေတမရှိ</div></div>`;
+
+  let diaDetail = diaOrder.length
+    ? diaOrder.map(ch => {
+        let displayName = DIACRITIC[ch] || ch;
+        if (ch.includes('သတ်')) displayName = ch;
+        return `${displayName} = ${allSymbols[ch]} ကြိမ်`;
+      }).join(' • ')
+    : 'သင်္ကေတမရှိ';
+
+  let diaMeaning = diaOrder.length
+    ? diaOrder.map(ch => {
+        let meaning = DIACRITIC_MEANING[ch] || 'အကျိုးသက်ရောက်မှုရှိသည်';
+        if (ch.includes('သတ်')) meaning = 'ဗျည်း + သတ် ပေါင်းစပ်မှု';
+        let displayName = DIACRITIC[ch] || ch;
+        if (ch.includes('သတ်')) displayName = ch;
+        return `${displayName} (${allSymbols[ch]}ကြိမ်) — ${meaning}`;
+      }).join('<br>')
+    : 'သင်္ကေတမရှိ';
+
+  let consString = consOnly.join('');
+
+  res.className = '';
+  res.innerHTML = `
+  <div class="card">
+    <h2>၂။ ဖွားဌာန + ဣဋ္ဌ/အနိဋ္ဌ</h2>
+    <div class="summary">မွေးနေ့: <b>${DAY[d].name}</b> • ကြွင်း: <b>${r===0?'၀':r}</b></div>
+    <div class="summary">ဖွားဇာတာ: <b>${bhava}ဖွား (${info.itha?'ဣဋ္ဌ':'အနိဋ္ဌ'})</b> — ${info.mat} မတ်အား ကောင်း၏</div>
+    <div class="summary">ပက္ခမိသည့်အိမ် (ရှောင်ရန်): <b>${pakkha}အိမ်</b></div>
+    <div class="summary">ပက္ခမိသည့်နေ့နံ (ရှောင်ရန်): <b>${pakkhaDay.dayName}နံ (${pakkhaDay.dayNum === 0 ? 'ဝ' : pakkhaDay.dayNum})</b></div>
+  </div>
+
+  <div class="card">
+    <h2>၃။ ပါဝင်သောဗျည်းများ</h2>
+    <div class="subtitle">ဗျည်းသီးသန့် — <b>${consString}</b></div>
+    <div class="chip-grid">${initChips}</div>
+    <div class="summary" style="margin-top:4px;">ပါဝင်သောဗျည်းများ — ${co.join(', ')}</div>
+    <div class="summary">${consDetail}</div>
+  </div>
+
+  <div class="card">
+    <h2>၄။ ဗျည်းဆန်းစစ်မှု</h2>
+    <div class="subtitle">အရင်းလုံး (<b>${firstCh}</b>): ${firstGroup} အက္ခရာ၊ ${firstYaw}၊ ပါပ၊ ${DAY[firstDay]?.nat}အစိုးရ၏ (${DAY[firstDay]?.color}စိုးမိုး)၊ ဓာတ်${DAY[firstDay]?.dhatType}။</div>
+    <div class="subtitle" style="margin-top:6px;">အဖျားလုံး (<b>${lastCh}</b>): ${lastGroup} အက္ခရာ၊ ${lastYaw}၊ ဓာတ်${DAY[lastDay]?.dhatType}။</div>
+    <div class="subtitle" style="margin-top:6px;">အရင်း/အဖျား ဓာတ်စပ်: ${DAY[firstDay]?.name} (${firstDay}) နှင့် ${DAY[lastDay]?.name} (${lastDay}) = ${dhatRelLabel}။</div>
+    ${(firstGroup==='ဒွေးဒဟ' || lastGroup==='ဒွေးဒဟ') ? `<div class="desc-box" style="margin-top:6px;">ဒွေးဒဟ အုပ်စုသည် ကိုယ်ခန္ဓာ/စိတ်ခန္ဓာကို ပိုင်စိုးတတ်သည်။ အလုပ်နှစ်မျိုး၊ အတွေးနှစ်မျိုးကို တစ်ပြိုင်နက် လုပ်ကိုင်တတ်၍ အမြဲမတင်မကျဖြစ်တတ်သည်။</div>` : ''}
+  </div>
+
+  <div class="card">
+    <h2>၅။ သတ်သင်္ကေတပါ အက္ခရာများ</h2>
+    <div class="chip-grid">${codaChips}</div>
+    <div class="summary">${codaDetail}</div>
+  </div>
+
+  <div class="card">
+    <h2>၆။ ပါဝင်သော သရ/သင်္ကေတများ</h2>
+    <div class="chip-grid">${diaChips}</div>
+    <div class="summary">${diaDetail}</div>
+    <div class="desc-box" style="margin-top:4px;">${diaMeaning}</div>
+  </div>
+
+  <div class="card">
+    <h2>၇။ ရင်းလုံး / အဆုံးလုံး</h2>
+    <div class="subtitle">အရင်း / အဖျား (မဟာဘုတ် အိမ်အလိုက်)</div>
+    <div class="summary">အရင်းလုံး <b>${firstCh}</b> (${DAY[firstDay]?.name || '—'} - ${firstDay}): ${r} ကြွင်းတွင် ${firstDay} = <b>${firstBhava}အိမ် (${firstItha?'ဣဋ္ဌ':'အနိဋ္ဌ'})</b></div>
+    <div class="summary">အဖျားလုံး <b>${lastCh}</b> (${DAY[lastDay]?.name || '—'} - ${lastDay==1?'၁':lastDay==2?'၂':lastDay==3?'၃':lastDay==4?'၄':lastDay==5?'၅':lastDay==6?'၆':lastDay==8?'၈':'ဝ'}): ${r} ကြွင်းတွင် ${lastDay==1?'၁':lastDay==2?'၂':lastDay==3?'၃':lastDay==4?'၄':lastDay==5?'၅':lastDay==6?'၆':lastDay==8?'၈':'ဝ'} = <b>${lastBhava}အိမ် (${lastItha?'ဣဋ္ဌ':'အနိဋ္ဌ'})</b></div>
+    <div class="summary">အမည်အမျိုးအစား: <b>${comboLabel[comboKey]} အမည်</b></div>
+
+    <div class="subtitle" style="margin-top:8px;">အရင်း / အဖျား နေ့နံ (ပါပ/သောမ အလိုက်)</div>
+    <div class="summary">အရင်းလုံး <b>${firstCh}</b> (${DAY[firstDay]?.name || '—'}) — ${firstPapaInfo.label} — ${tag(firstPapaInfo.itha?'ဣဌ':'အနိဌ', firstPapaInfo.itha?'itha':'anitha')}</div>
+    <div class="summary">အဖျားလုံး <b>${lastCh}</b> (${DAY[lastDay]?.name || '—'}) — ${lastPapaInfo.label} — ${tag(lastPapaInfo.itha?'ဣဌ':'အနိဌ', lastPapaInfo.itha?'itha':'anitha')}</div>
+  </div>
+
+  <div class="card">
+    <h2>၈။ ဣဋ္ဌ/အနိဋ္ဌ ဆုံးဖြတ်</h2>
+    <div class="summary" style="font-size:12px; font-weight:700; color:#f5d67c;">${comboLabel[comboKey]} အမည်</div>
+    <div class="desc-box">${COMBO[comboKey]} ရာဇအိမ်အရ ဩဇာအာဏာ ထက်မြက်မည်၊ အဓိပတိအိမ်အရ ဦးစီးဦးဆောင် ပြုနိုင်မည်။</div>
+  </div>
+
+  <div class="card">
+    <h2>၉။ အကြံပြုနာမည်အတွဲများ</h2>
+    <div class="subtitle">${r}ကြွင်း ${DAY[d].name} အတွက် နံသင့်အတွဲများ</div>
+    <table class="suggest-table">
+      <thead><tr><th>နံသင့်အတွဲများ</th><th></th><th></th></tr></thead>
+      <tbody>${suggestRows}</tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>၁၀။ နာမည်၏ လုံးကောက် အဟောများ</h2>
+    <div class="subtitle">ပါဝင်သောဗျည်း တစ်လုံးချင်းစီ၏ အသေးစိတ်ဆန်းစစ်ချက်</div>
+    ${letterFortunes.map(lf => `<div class="desc-box" style="margin-top:4px;">${lf.text}</div>`).join('')}
+  </div>
+
+  <div class="card">
+    <h2>၁၁။ နိဂုံး</h2>
+    <div class="summary">"<b>${name}</b>" သည် <b>${bhava}ဖွား</b> (${info.itha?'ဣဋ္ဌ':'အနိဋ္ဌ'}, ${info.mat}မတ်) အတွက် <b>${comboLabel[comboKey]}</b> အမည်ဖြစ်ပြီး ရင်း-အဆုံး <b>${rel.label}</b> ဖြစ်ပါသည်။</div>
+    <div class="summary">ပက္ခ (ရှောင်ရန်): <b>${pakkha}</b> ဌာန / <b>${pakkhaDay.dayName}</b> နေ့နံ</div>
+  </div>
+  `;
+  res.classList.remove('hidden');
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+window.addEventListener('DOMContentLoaded', calculate);
+</script>
+</body>
+</html>
