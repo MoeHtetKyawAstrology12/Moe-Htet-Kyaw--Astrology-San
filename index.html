@@ -347,10 +347,6 @@ function getConsonantsOnly(chars) {
   const skipIndices = new Set();
 
   // ★ ၁။ ဟထိုး (ှ) ရဲ့ ညာဘက်က ဗျည်းကို မယူ ★
-  //    ှ သည် ချက်ချင်းဆက်တိုက် ဗျည်း (သို့မဟုတ် အခြား medial ကိုသာ ကျော်၍) တွေ့မှသာ
-  //    ပေါင်းသတ်ရမည်။ သရ (vowel/nucleus) သို့ရောက်လျှင် syllable ပြီးဆုံးပြီဖြစ်၍
-  //    ရပ်ရမည် — မရပ်လျှင် "ရွှေထူး" ကဲ့သို့ syllable သစ်ရဲ့ ဗျည်း (ထ) ကို မှားယွင်း
-  //    ကျော်စွဲ ဖျက်တတ်သည် (ရွှေ = ရ+ွ+ှ+ေ ပြီးမှ ထူး = ထ+ူ+း အသစ်စ)။
   for (let i = 0; i < len; i++) {
     const code = chars[i].codePointAt(0);
     if (code === medialHa) {
@@ -360,7 +356,6 @@ function getConsonantsOnly(chars) {
           skipIndices.add(j);
           break;
         }
-        // အခြား medial (ျ/ြ/ွ) ကိုသာ ကျော်ခွင့်ပြု — သရ/သင်္ကေတ (nucleus) တွေ့ရင် ရပ်
         if (nextCode === 0x103B || nextCode === 0x103C || nextCode === 0x103D) continue;
         break;
       }
@@ -384,9 +379,6 @@ function getConsonantsOnly(chars) {
   }
 
   // ★ ၃။ အသတ် (်) ရဲ့ ဘယ်ဘက်က ဗျည်းကို စစ်ပါ ★
-  //    - ဗျည်း တိုက်ရိုက် တွေ့ရင် → ဖျက် (ဗျည်းသတ်)
-  //    - သရ/သင်္ကေတ ကျော်ပြီး ဗျည်းတွေ့ရင် → မဖျက် (ဗျည်း + သရ + အသတ်)
-  //    - အောက်မြစ် (့) ရှိခဲ့ရင် → ဖျက်
   for (let i = 0; i < len; i++) {
     const code = chars[i].codePointAt(0);
     if (code === asat) {
@@ -394,19 +386,16 @@ function getConsonantsOnly(chars) {
       let sawDotBelow = false;
       for (let j = i - 1; j >= 0; j--) {
         const prevCode = chars[j].codePointAt(0);
-        // ဗျည်း တွေ့ရင်
         if (consonants.has(prevCode)) {
           if (sawDotBelow || !sawVowel) {
             skipIndices.add(j);
           }
           break;
         }
-        // အောက်မြစ် (့) တွေ့ရင်
         if (prevCode === dotBelow) {
           sawDotBelow = true;
           continue;
         }
-        // သရ/သင်္ကေတ တွေ့ရင်
         if (isVowelOrSign(prevCode)) {
           sawVowel = true;
           continue;
@@ -458,7 +447,7 @@ function getCodaConsonants(chars) {
   return result;
 }
 
-// ★★★ သရ/သင်္ကေတ စစ်ထုတ်သည့် function — ဗျည်းမဟုတ်တာအားလုံး ★★★
+// ★★★ သရ/သင်္ကေတ စစ်ထုတ်သည့် function ★★★
 function getDiacriticDetails(chars) {
   const len = chars.length;
   const vowelCounts = {};
@@ -540,6 +529,104 @@ function getDiacriticDetails(chars) {
   }
 
   return { allSymbols, order };
+}
+
+/* ============================================================
+   ★★★ ပက္ခ စနစ် — ကြွင်း (၀-၆) အလိုက် သီးသန့် ပက္ခဇယား ★★★
+   ============================================================ */
+const PAK_KHA_RULES = {
+  0: [
+    { left:['အ','ဥ'], right:['သ','ဟ'], good:true },
+    { left:['သ','ဟ'], right:['အ','ဥ'], good:false },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['ပ','ဖ','ဗ','ဘ','မ'], good:true },
+    { left:['ပ','ဖ','ဗ','ဘ','မ'], right:['က','ခ','ဂ','ဃ','င'], good:false },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['ယ','လ','ဝ'], good:true },
+    { left:['ယ','လ','ဝ'], right:['စ','ဆ','ဇ','ဈ','ည'], good:false },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:false }
+  ],
+  1: [
+    { left:['အ','ဥ'], right:['အ','ဥ'], good:false },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:true },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['က','ခ','ဂ','ဃ','င'], good:false },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['သ','ဟ'], good:true },
+    { left:['သ','ဟ'], right:['စ','ဆ','ဇ','ဈ','ည'], good:false },
+    { left:['ယ','လ','ဝ'], right:['ပ','ဖ','ဘ','ဗ','မ'], good:true },
+    { left:['ပ','ဖ','ဘ','ဗ','မ'], right:['ယ','လ','ဝ'], good:false }
+  ],
+  2: [
+    { left:['အ','ဥ'], right:['စ','ဆ','ဇ','ဈ','ည'], good:false },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['အ','ဥ'], good:true },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['က','ခ','ဂ','ဃ','င'], good:false },
+    { left:['ယ','လ','ဝ'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:true },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['ယ','လ','ဝ'], good:false },
+    { left:['ပ','ဖ','ဘ','ဗ','မ'], right:['သ','ဟ'], good:true },
+    { left:['သ','ဟ'], right:['ပ','ဖ','ဘ','ဗ','မ'], good:false }
+  ],
+  3: [
+    { left:['အ','ဥ'], right:['ပ','ဖ','ဘ','ဗ','မ'], good:false },
+    { left:['ပ','ဖ','ဘ','ဗ','မ'], right:['အ','ဥ'], good:true },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['ယ','လ','ဝ'], good:false },
+    { left:['ယ','လ','ဝ'], right:['က','ခ','ဂ','ဃ','င'], good:true },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['စ','ဆ','ဇ','ဈ','ည'], good:false },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['သ','ဟ'], good:false },
+    { left:['သ','ဟ'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:true }
+  ],
+  4: [
+    { left:['အ','ဥ'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:false },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['အ','ဥ'], good:true },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['သ','ဟ'], good:true },
+    { left:['သ','ဟ'], right:['က','ခ','ဂ','ဃ','င'], good:false },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['ပ','ဖ','ဘ','ဗ','မ'], good:false },
+    { left:['ပ','ဖ','ဘ','ဗ','မ'], right:['စ','ဆ','ဇ','ဈ','ည'], good:true },
+    { left:['ယ','လ','ဝ'], right:['ယ','လ','ဝ'], good:false }
+  ],
+  5: [
+    { left:['အ','ဥ'], right:['က','ခ','ဂ','ဃ','င'], good:true },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['အ','ဥ'], good:false },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:false },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['စ','ဆ','ဇ','ဈ','ည'], good:true },
+    { left:['ယ','လ','ဝ'], right:['သ','ဟ'], good:false },
+    { left:['သ','ဟ'], right:['ယ','လ','ဝ'], good:true },
+    { left:['ပ','ဖ','ဗ','ဘ','မ'], right:['ပ','ဖ','ဗ','ဘ','မ'], good:false }
+  ],
+  6: [
+    { left:['အ','ဥ'], right:['ယ','လ','ဝ'], good:true },
+    { left:['ယ','လ','ဝ'], right:['အ','ဥ'], good:false },
+    { left:['က','ခ','ဂ','ဃ','င'], right:['စ','ဆ','ဇ','ဈ','ည'], good:true },
+    { left:['စ','ဆ','ဇ','ဈ','ည'], right:['က','ခ','ဂ','ဃ','င'], good:false },
+    { left:['ပ','ဖ','ဗ','ဘ','မ'], right:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], good:false },
+    { left:['တ','ထ','ဒ','ဓ','န','ဋ','ဌ','ဍ','ဎ','ဏ'], right:['ပ','ဖ','ဗ','ဘ','မ'], good:true },
+    { left:['သ','ဟ'], right:['သ','ဟ'], good:false }
+  ]
+};
+
+// ★ ဗျည်းတစ်လုံးသည် အုပ်စုတစ်ခုတွင် ပါဝင်မပါဝင် စစ်ဆေးသည် ★
+function belongsToGroup(ch, group) {
+  return group.includes(ch);
+}
+
+// ★ အရင်းလုံး/အဖျားလုံး အတွဲသည် ပက္ခမိမမိ စစ်ဆေးသည် ★
+function checkPakkhaConflict(remainder, firstCh, lastCh) {
+  const rules = PAK_KHA_RULES[remainder] || [];
+  for (const rule of rules) {
+    const leftMatch = belongsToGroup(firstCh, rule.left);
+    const rightMatch = belongsToGroup(lastCh, rule.right);
+    if (leftMatch && rightMatch) {
+      return { matched: true, good: rule.good, rule };
+    }
+  }
+  return { matched: false, good: true, rule: null };
+}
+
+// ★ ပက္ခစစ်ဆေးမှု အပြည့်အစုံ (result အတွက်) ★
+function getPakkhaCheck(remainder, firstCh, lastCh) {
+  const result = checkPakkhaConflict(remainder, firstCh, lastCh);
+  return {
+    hasConflict: result.matched && !result.good,
+    isGood: result.matched && result.good,
+    matched: result.matched,
+    rule: result.rule
+  };
 }
 
 /* ============================================================
@@ -659,12 +746,10 @@ function calculate() {
   const pakkha = info.pakkha;
   const pakkhaDay = getPakkhaDay(r, bhava);
 
-  // ★★★ ပက္ခ တိုက်ဆိုင်မှု စစ်ဆေးခြင်း — အမည်၏ အရင်းလုံး/အဖျားလုံး ★★★
-  // ပက္ခနေ့နံ (pakkhaDay.dayNum) သည် ဗျည်းရဲ့ နေ့နံ (firstDay/lastDay) တစ်ခုခုနှင့်
-  // တူညီနေပါက ဤအမည်သည် "ပက္ခ မိ" (ရှောင်ရန်) ဖြစ်သည်။
-  const pakkhaConflictFirst = (firstDay === pakkhaDay.dayNum);
-  const pakkhaConflictLast = (lastDay === pakkhaDay.dayNum);
-  const hasPakkhaConflict = pakkhaConflictFirst || pakkhaConflictLast;
+  // ★★★ ပက္ခ တိုက်ဆိုင်မှု စစ်ဆေးခြင်း — အရင်းလုံး/အဖျားလုံး အုပ်စုအလိုက် ★★★
+  const pakkhaCheck = getPakkhaCheck(r, firstCh, lastCh);
+  const hasPakkhaConflict = pakkhaCheck.hasConflict;
+  const isPakkhaGood = pakkhaCheck.isGood;
 
   const dhatFriendName = getDhatFriendName(firstDay, lastDay);
   const dhatIsEnemy = !dhatFriendName && isDayPair(DHAT_ENEMY, firstDay, lastDay);
@@ -746,17 +831,17 @@ function calculate() {
       <div class="summary" style="margin-top:4px;">ပက္ခ တိုက်ဆိုင်မှု စစ်ဆေးချက်:
         ${hasPakkhaConflict
           ? tag('ပက္ခ မိသည်', 'anitha')
-          : tag('ပက္ခ မမိပါ', 'itha')}
+          : (isPakkhaGood ? tag('ပက္ခ ကောင်းသည်', 'itha') : tag('ပက္ခ မမိပါ', 'itha'))}
       </div>
       ${hasPakkhaConflict ? `<div class="desc-box" style="margin-top:4px;">
-          ${pakkhaConflictFirst ? `အရင်းလုံး <b>${firstCh}</b> (${DAY[firstDay]?.name})` : ''}
-          ${pakkhaConflictFirst && pakkhaConflictLast ? ' နှင့် ' : ''}
-          ${pakkhaConflictLast ? `အဖျားလုံး <b>${lastCh}</b> (${DAY[lastDay]?.name})` : ''}
-          ${(pakkhaConflictFirst && pakkhaConflictLast) ? 'တို့သည်' : 'သည်'} ပက္ခနေ့နံ (<b>${pakkhaDay.dayName}</b>) နှင့် တူညီနေသောကြောင့် ဤအမည်သည် ပက္ခ မိသည့် အမည် ဖြစ်ပါသည်။ အခြားအမည် ရွေးချယ်ရန် အကြံပြုပါသည်။
+          အရင်းလုံး <b>${firstCh}</b> (${firstGroup} အုပ်စု) နှင့် အဖျားလုံး <b>${lastCh}</b> (${lastGroup} အုပ်စု) တို့သည် <b>${r}ကြွင်း</b> ပက္ခဇယားအရ <b>ဆိုးပက္ခ</b> မိသည့် အတွဲဖြစ်ပါသည်။ ဤအမည်သည် ပက္ခ မိသည့် အမည် ဖြစ်၍ အခြားအမည် ရွေးချယ်ရန် အကြံပြုပါသည်။
+        </div>`
+        : (isPakkhaGood ? `<div class="desc-box" style="margin-top:4px;">
+          အရင်းလုံး <b>${firstCh}</b> (${firstGroup} အုပ်စု) နှင့် အဖျားလုံး <b>${lastCh}</b> (${lastGroup} အုပ်စု) တို့သည် <b>${r}ကြွင်း</b> ပက္ခဇယားအရ <b>ကောင်းပက္ခ</b> မိသည့် အတွဲဖြစ်ပါသည်။ ဤအမည်သည် ပက္ခ ကောင်းမွန်ပါသည်။
         </div>`
         : `<div class="desc-box" style="margin-top:4px;">
-          အရင်းလုံး <b>${firstCh}</b> (${DAY[firstDay]?.name}) နှင့် အဖျားလုံး <b>${lastCh}</b> (${DAY[lastDay]?.name}) နှစ်ခုစလုံးသည် ပက္ခနေ့နံ (<b>${pakkhaDay.dayName}</b>) နှင့် မတူညီသဖြင့် ဤအမည်သည် ပက္ခ မမိပါ။
-        </div>`
+          အရင်းလုံး <b>${firstCh}</b> (${firstGroup} အုပ်စု) နှင့် အဖျားလုံး <b>${lastCh}</b> (${lastGroup} အုပ်စု) တို့သည် <b>${r}ကြွင်း</b> ပက္ခဇယားတွင် သတ်မှတ်ထားသော အတွဲများနှင့် မကိုက်ညီသဖြင့် ပက္ခ မမိပါ။
+        </div>`)
       }
     </div>
 
@@ -824,7 +909,7 @@ function calculate() {
     <div class="card">
       <h2>၁၁။ နိဂုံး</h2>
       <div class="summary">"<b>${name}</b>" သည် <b>${bhava}ဖွား</b> (${info.itha?'ဣဋ္ဌ':'အနိဋ္ဌ'}, ${info.mat}မတ်) အတွက် <b>${comboLabel[comboKey]}</b> အမည်ဖြစ်ပြီး ရင်း-အဆုံး <b>${rel.label}</b> ဖြစ်ပါသည်။</div>
-      <div class="summary">ပက္ခ (ရှောင်ရန်): <b>${pakkha}</b> ဌာန / <b>${pakkhaDay.dayName}</b> နေ့နံ</div>
+      <div class="summary">ပက္ခ: <b>${hasPakkhaConflict ? 'ဆိုးပက္ခ မိသည် (ရှောင်ရန်)' : (isPakkhaGood ? 'ကောင်းပက္ခ မိသည်' : 'ပက္ခ မမိပါ')}</b> — ${r}ကြွင်း ပက္ခဇယားအရ</div>
     </div>
   `;
 
