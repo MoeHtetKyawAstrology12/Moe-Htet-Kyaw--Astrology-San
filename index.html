@@ -44,14 +44,20 @@ select, input {
 }
 select:focus, input:focus { border-color:#d4af37; }
 
+.btn-row { display:flex; gap:8px; margin-top:8px; }
 .btn {
-  width:100%; padding:10px; margin-top:8px;
+  flex:1 1 0; width:0; padding:10px 6px;
   background:linear-gradient(135deg,#d4af37,#b3882a);
   border:none; border-radius:24px;
-  font-weight:700; font-size:13px; color:#120f22;
-  cursor:pointer;
+  font-weight:700; font-size:12px; color:#120f22;
+  cursor:pointer; text-align:center;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .btn:active { transform:scale(0.97); }
+.btn-reset {
+  background:linear-gradient(135deg,#4a4270,#332c52);
+  color:#e4dcff;
+}
 
 .hidden { display:none !important; }
 
@@ -126,7 +132,10 @@ select:focus, input:focus { border-color:#d4af37; }
     <label>စစ်ဆေးလိုသည့် နာမည်</label>
     <input type="text" id="nameInput" placeholder="နာမည် ထည့်ပါ">
 
-    <button class="btn" onclick="calculate()">✦ တွက်မည် ✦</button>
+    <div class="btn-row">
+      <button class="btn" onclick="calculate()">✦ တွက်မည် ✦</button>
+      <button class="btn btn-reset" onclick="resetForm()">↺ ပြန်စမည်</button>
+    </div>
   </div>
 
   <div id="result" class="hidden"></div>
@@ -321,19 +330,13 @@ const visarga = 0x1038;
 const asat = 0x103A;
 const virama = 0x1039;
 const medialHa = 0x103E;
-const dotBelow = 0x1037; // ့ အောက်မြစ်
+const dotBelow = 0x1037;
 
-// ★★★ သရ/သင်္ကေတ ဟုတ်/မဟုတ် စစ်သည့် function ★★★
 function isVowelOrSign(code) {
-  // သရ: ာ ါ ိ ီ ု ူ ေ ဲ
   if (code >= 0x102B && code <= 0x1032) return true;
-  // သင်ပေါင်းငယ် ံ
   if (code === 0x1036) return true;
-  // အောက်မြစ် ့
   if (code === 0x1037) return true;
-  // ဝိသျ် း
   if (code === 0x1038) return true;
-  // ယပက်လက် ျ၊ ရရစ် ြ၊ ဝဆွဲ ွ၊ ဟထိုး ှ
   if (code >= 0x103B && code <= 0x103E) return true;
   return false;
 }
@@ -344,6 +347,10 @@ function getConsonantsOnly(chars) {
   const skipIndices = new Set();
 
   // ★ ၁။ ဟထိုး (ှ) ရဲ့ ညာဘက်က ဗျည်းကို မယူ ★
+  //    ှ သည် ချက်ချင်းဆက်တိုက် ဗျည်း (သို့မဟုတ် အခြား medial ကိုသာ ကျော်၍) တွေ့မှသာ
+  //    ပေါင်းသတ်ရမည်။ သရ (vowel/nucleus) သို့ရောက်လျှင် syllable ပြီးဆုံးပြီဖြစ်၍
+  //    ရပ်ရမည် — မရပ်လျှင် "ရွှေထူး" ကဲ့သို့ syllable သစ်ရဲ့ ဗျည်း (ထ) ကို မှားယွင်း
+  //    ကျော်စွဲ ဖျက်တတ်သည် (ရွှေ = ရ+ွ+ှ+ေ ပြီးမှ ထူး = ထ+ူ+း အသစ်စ)။
   for (let i = 0; i < len; i++) {
     const code = chars[i].codePointAt(0);
     if (code === medialHa) {
@@ -353,7 +360,8 @@ function getConsonantsOnly(chars) {
           skipIndices.add(j);
           break;
         }
-        if (isVowelOrSign(nextCode)) continue;
+        // အခြား medial (ျ/ြ/ွ) ကိုသာ ကျော်ခွင့်ပြု — သရ/သင်္ကေတ (nucleus) တွေ့ရင် ရပ်
+        if (nextCode === 0x103B || nextCode === 0x103C || nextCode === 0x103D) continue;
         break;
       }
     }
@@ -376,8 +384,9 @@ function getConsonantsOnly(chars) {
   }
 
   // ★ ၃။ အသတ် (်) ရဲ့ ဘယ်ဘက်က ဗျည်းကို စစ်ပါ ★
-  //    သရ ရှိခဲ့ရင် → ဗျည်းကို ယူ (မဖျက်)
-  //    ဗျည်း တိုက်ရိုက် / အောက်မြစ် → ဗျည်းကို မယူ (ဖျက်)
+  //    - ဗျည်း တိုက်ရိုက် တွေ့ရင် → ဖျက် (ဗျည်းသတ်)
+  //    - သရ/သင်္ကေတ ကျော်ပြီး ဗျည်းတွေ့ရင် → မဖျက် (ဗျည်း + သရ + အသတ်)
+  //    - အောက်မြစ် (့) ရှိခဲ့ရင် → ဖျက်
   for (let i = 0; i < len; i++) {
     const code = chars[i].codePointAt(0);
     if (code === asat) {
@@ -387,12 +396,7 @@ function getConsonantsOnly(chars) {
         const prevCode = chars[j].codePointAt(0);
         // ဗျည်း တွေ့ရင်
         if (consonants.has(prevCode)) {
-          // အောက်မြစ် ရှိခဲ့ရင် → မယူ
-          // သရ ရှိခဲ့ရင် → ယူ
-          // ဘာမှ မရှိခဲ့ရင် → မယူ (ဗျည်းသတ်)
-          if (sawDotBelow) {
-            skipIndices.add(j);
-          } else if (!sawVowel) {
+          if (sawDotBelow || !sawVowel) {
             skipIndices.add(j);
           }
           break;
@@ -655,6 +659,13 @@ function calculate() {
   const pakkha = info.pakkha;
   const pakkhaDay = getPakkhaDay(r, bhava);
 
+  // ★★★ ပက္ခ တိုက်ဆိုင်မှု စစ်ဆေးခြင်း — အမည်၏ အရင်းလုံး/အဖျားလုံး ★★★
+  // ပက္ခနေ့နံ (pakkhaDay.dayNum) သည် ဗျည်းရဲ့ နေ့နံ (firstDay/lastDay) တစ်ခုခုနှင့်
+  // တူညီနေပါက ဤအမည်သည် "ပက္ခ မိ" (ရှောင်ရန်) ဖြစ်သည်။
+  const pakkhaConflictFirst = (firstDay === pakkhaDay.dayNum);
+  const pakkhaConflictLast = (lastDay === pakkhaDay.dayNum);
+  const hasPakkhaConflict = pakkhaConflictFirst || pakkhaConflictLast;
+
   const dhatFriendName = getDhatFriendName(firstDay, lastDay);
   const dhatIsEnemy = !dhatFriendName && isDayPair(DHAT_ENEMY, firstDay, lastDay);
   const dhatRelLabel = dhatFriendName
@@ -732,6 +743,21 @@ function calculate() {
       <div class="summary">ဖွားဇာတာ: <b>${bhava}ဖွား (${info.itha?'ဣဋ္ဌ':'အနိဋ္ဌ'})</b> — ${info.mat} မတ်အား ကောင်း၏</div>
       <div class="summary">ပက္ခမိသည့်အိမ် (ရှောင်ရန်): <b>${pakkha}အိမ်</b></div>
       <div class="summary">ပက္ခမိသည့်နေ့နံ (ရှောင်ရန်): <b>${pakkhaDay.dayName}နံ (${pakkhaDay.dayNum === 0 ? 'ဝ' : pakkhaDay.dayNum})</b></div>
+      <div class="summary" style="margin-top:4px;">ပက္ခ တိုက်ဆိုင်မှု စစ်ဆေးချက်:
+        ${hasPakkhaConflict
+          ? tag('ပက္ခ မိသည်', 'anitha')
+          : tag('ပက္ခ မမိပါ', 'itha')}
+      </div>
+      ${hasPakkhaConflict ? `<div class="desc-box" style="margin-top:4px;">
+          ${pakkhaConflictFirst ? `အရင်းလုံး <b>${firstCh}</b> (${DAY[firstDay]?.name})` : ''}
+          ${pakkhaConflictFirst && pakkhaConflictLast ? ' နှင့် ' : ''}
+          ${pakkhaConflictLast ? `အဖျားလုံး <b>${lastCh}</b> (${DAY[lastDay]?.name})` : ''}
+          ${(pakkhaConflictFirst && pakkhaConflictLast) ? 'တို့သည်' : 'သည်'} ပက္ခနေ့နံ (<b>${pakkhaDay.dayName}</b>) နှင့် တူညီနေသောကြောင့် ဤအမည်သည် ပက္ခ မိသည့် အမည် ဖြစ်ပါသည်။ အခြားအမည် ရွေးချယ်ရန် အကြံပြုပါသည်။
+        </div>`
+        : `<div class="desc-box" style="margin-top:4px;">
+          အရင်းလုံး <b>${firstCh}</b> (${DAY[firstDay]?.name}) နှင့် အဖျားလုံး <b>${lastCh}</b> (${DAY[lastDay]?.name}) နှစ်ခုစလုံးသည် ပက္ခနေ့နံ (<b>${pakkhaDay.dayName}</b>) နှင့် မတူညီသဖြင့် ဤအမည်သည် ပက္ခ မမိပါ။
+        </div>`
+      }
     </div>
 
     <div class="card">
@@ -806,7 +832,13 @@ function calculate() {
   res.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-window.addEventListener('DOMContentLoaded', calculate);
+function resetForm() {
+  document.getElementById('nameInput').value = '';
+  const res = document.getElementById('result');
+  res.innerHTML = '';
+  res.classList.add('hidden');
+  document.getElementById('nameInput').focus();
+}
 </script>
 </body>
 </html>
